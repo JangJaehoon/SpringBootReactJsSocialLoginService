@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.LoginRequestDTO;
 import com.example.demo.dto.UserRequestDTO;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,11 @@ public class UserController {
         userService.signUp(userRequestDTO);
         return "SignUp Success! (회원가입 성공!)";
     }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequestDTO loginRequestDTO){
+        return userService.login(loginRequestDTO);
+    }
+
 
 }

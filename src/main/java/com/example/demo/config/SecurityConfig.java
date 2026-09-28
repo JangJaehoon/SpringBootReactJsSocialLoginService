@@ -16,8 +16,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable) // LogIn페이지 비활성화
                 .httpBasic(Customizer.withDefaults())
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("/api/public/**").permitAll()
+                .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/api/public/**").permitAll()
                     .requestMatchers("/api/private/**").authenticated()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .anyRequest().denyAll());

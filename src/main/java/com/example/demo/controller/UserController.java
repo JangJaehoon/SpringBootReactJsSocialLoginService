@@ -23,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO loginRequestDTO){
-        return userService.login(loginRequestDTO);
+    public String login(@RequestBody LoginRequestDTO request){
+        return userService.login(request); // JWT토큰 반환
     }
 
 

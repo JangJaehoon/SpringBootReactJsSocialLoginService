@@ -1,9 +1,6 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -19,4 +16,6 @@ public class User {
     private String username; // id
     private String password; // password
     private String role; // 권한 authority
+    @Column(length = 500)
+    private String refreshToken;
 }

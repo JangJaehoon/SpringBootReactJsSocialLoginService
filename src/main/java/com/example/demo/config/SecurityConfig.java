@@ -22,10 +22,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // LogIn페이지 비활성화
                 .httpBasic(Customizer.withDefaults()) // 또는 JWT등 다른 인증 방식 사용
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/api/public/**").permitAll()  // 공개 APi
-                        .requestMatchers("/api/auth/**").permitAll()    // 회원 가입
-                    .requestMatchers("/api/private/**").authenticated() // 인증 필요
-                                .anyRequest().denyAll()) // 기본 인증(JWT로 대체 예정)
+//                        .requestMatchers("/api/public/**").permitAll()  // 공개 APi
+//                        .requestMatchers("/api/auth/**").permitAll()    // 회원 가입
+//                    .requestMatchers("/api/private/**").authenticated() // 인증 필요
+                        .requestMatchers("/api/auth/**").permitAll() // 회원 가입
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 공개 APi
+                        .requestMatchers("/api/private/**").hasAnyRole("USER", "ADMIN") // 인증 필요
+                        .anyRequest().denyAll()) // 기본 인증(JWT로 대체 예정)
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class); // 추가
 

@@ -26,7 +26,7 @@ public class AdminController {
     @GetMapping("/users")
     public List<User> getAllUsers(){
         return userRepository.findAll();
-
+        // 모든 유저의 정보를 가져옴.
     }
 
 }

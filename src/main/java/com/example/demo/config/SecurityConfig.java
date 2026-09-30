@@ -10,33 +10,72 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+//                                                   JwtAuthenticationFilter jwtAuthenticationFilter)
+//            throws Exception{
+//        http.csrf(AbstractHttpConfigurer::disable)  // Rest Api에서는 비활성화
+//                .formLogin(AbstractHttpConfigurer::disable) // LogIn페이지 비활성화
+//                .httpBasic(Customizer.withDefaults()) // 또는 JWT등 다른 인증 방식 사용
+//                .authorizeHttpRequests(auth->auth
+////                        .requestMatchers("/api/public/**").permitAll()  // 공개 APi
+////                        .requestMatchers("/api/auth/**").permitAll()    // 회원 가입
+////                    .requestMatchers("/api/private/**").authenticated() // 인증 필요
+//                        .requestMatchers("/api/auth/**").permitAll() // 회원 가입
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 공개 APi
+//                        .requestMatchers("/api/private/**").hasAnyRole("USER", "ADMIN") // 인증 필요
+//                        .anyRequest().denyAll()) // 기본 인증(JWT로 대체 예정)
+//                .addFilterBefore(jwtAuthenticationFilter,
+//                        UsernamePasswordAuthenticationFilter.class); // 추가
+//
+//        return http.build();
+//    }
+
+    // Cors
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtAuthenticationFilter jwtAuthenticationFilter)
-            throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable)  // Rest Api에서는 비활성화
-                .formLogin(AbstractHttpConfigurer::disable) // LogIn페이지 비활성화
-                .httpBasic(Customizer.withDefaults()) // 또는 JWT등 다른 인증 방식 사용
-                .authorizeHttpRequests(auth->auth
-//                        .requestMatchers("/api/public/**").permitAll()  // 공개 APi
-//                        .requestMatchers("/api/auth/**").permitAll()    // 회원 가입
-//                    .requestMatchers("/api/private/**").authenticated() // 인증 필요
-                        .requestMatchers("/api/auth/**").permitAll() // 회원 가입
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // 공개 APi
-                        .requestMatchers("/api/private/**").hasAnyRole("USER", "ADMIN") // 인증 필요
-                        .anyRequest().denyAll()) // 기본 인증(JWT로 대체 예정)
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class); // 추가
+                       JwtAuthenticationFilter jwtAuthenticationFilter ) throws Exception {
 
-        return http.build();
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+//                .httpBasic( Customizer.withDefaults() )
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api.admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api./private/**").hasAnyRole("USER", "ADMIN")
+                                .anyRequest().denyAll()
+                ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5173/"); // FrontEnd Address
+        config.addAllowedMethod("*"); // Get, Post, Put, Delete
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+        // Authrization Information (Cookie, Header) 포함 허용
+
+        UrlBasedCorsConfigurationSource source
+                = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
